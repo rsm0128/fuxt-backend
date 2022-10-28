@@ -174,10 +174,7 @@ function gql_register_next_post() {
 				array(
 					'fields' => array(
 						'node' => array(
-							'description' => __(
-								'The node of the next item',
-								'fuxt'
-							),
+							'description' => __( 'The node of the next item', 'fuxt' ),
 							'type'        => $ucfirst,
 							'resolve'     => function ( $post_id, $args, $context ) {
 								return \WPGraphQL\Data\DataSource::resolve_post_object(
@@ -196,10 +193,7 @@ function gql_register_next_post() {
 				'next' . $ucfirst,
 				array(
 					'type'        => 'Next' . $ucfirst . 'Edge',
-					'description' => __(
-						'The next post of the current port',
-						'fuxt'
-					),
+					'description' => __( 'The next post of the current port', 'fuxt' ),
 					'args'        => array(
 						'inSameTerm'    => array(
 							'type'        => 'Boolean',
@@ -249,7 +243,16 @@ function gql_register_next_post() {
 							$taxonomy
 						);
 
-						return $next_post ? $next_post->ID : null;
+						if ( ! empty( $next_post ) ) {
+							return $next_post->ID;
+						}
+
+						$first_post = get_boundary_post( $in_same_term, $excluded_terms, true, $taxonomy );
+						if ( ! empty( $first_post ) ) {
+							return $first_post[0]->ID;
+						}
+
+						return null;
 					},
 				)
 			);
@@ -353,7 +356,16 @@ function gql_register_previous_post() {
 							$taxonomy
 						);
 
-						return $prev_post ? $prev_post->ID : null;
+						if ( ! empty( $prev_post ) ) {
+							return $prev_post->ID;
+						}
+
+						$last_post = get_boundary_post( $in_same_term, $excluded_terms, false, $taxonomy );
+						if ( ! empty( $last_post ) ) {
+							return $last_post[0]->ID;
+						}
+
+						return null;
 					},
 				)
 			);
